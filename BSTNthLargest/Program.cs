@@ -27,7 +27,9 @@ namespace BSTNthLargest
             NodeUtil.InsertNode(ref n, 50);
             
             int c = 0;
+            
             NodeUtil.NthLargest(n, 5, ref c );
+            //NodeUtil.NthLargest_NoRecur(n, 5, c);
         }
 
     }
@@ -63,36 +65,56 @@ namespace BSTNthLargest
                 InsertNode(ref node.left, key);
             }
         }
-
+        //TODO: Make it stop after count == n
         public static void NthLargest(Node node, int n, ref int count)
         {
-            if (node == null)
+            if ((node == null) || (count == n))
                 return;
 
-            // process larger nodes on the right
-            if (node.right != null)
-                NthLargest(node.right, n, ref count);
+            NthLargest(node.right, n, ref count);
 
             // process this node
-            if (count < n)
+            ++count;
+            if (count == n)
             {
-                ++count;
-                if (count == n)
-                {
-                    Console.WriteLine("Nth ({0}) node key is: {1}", n, node.Key);
-                    return;
-                }
+                Console.WriteLine("Nth ({0}) node key is: {1}", n, node.Key);
+                return;
             }
-            else
+            
+            NthLargest(node.left, n, ref count);
+        }
+
+        public static void NthLargest_NoRecur(Node node, int n, int count)
+        {
+            Stack<Node> stack = new Stack<Node>();
+
+            if (node == null)
             {
                 return;
             }
 
-            // Process nodes on the left if necessary
-            if (node.left != null)
-                NthLargest(node.left, n, ref count);
+            Node curNode = node;
+            while (true)
+            {
+                if ((stack.Count() == 0) && (curNode == null))
+                {
+                    return;
+                }
+
+                // find the largest node in this subtree
+                while (curNode != null)
+                {
+                    stack.Push(curNode);
+                    curNode = curNode.right;
+                }
+
+                curNode = stack.Pop();
+                Console.WriteLine("Node: {0}", curNode.Key);
+
+
+                curNode = curNode.left;
+            }
+ 
         }
-
     }
-
 }
